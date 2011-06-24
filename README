@@ -1,0 +1,98 @@
+Design Notes...
+
+I looked at the roll and I will have 140 students this time. I want
+grading to be really efficient.
+
+Here are somethings that could do that:
+
+1) Compile, run, and capture the output of each program at turnin:
+
+for i in ${n}/*.c ; do
+ (gcc $i -o $i.bin && ./$i.bin) | tee $i.out
+ cat $i > $i.fin
+ echo '/*' >> $i.fin
+ cat $.out >> $i.fin
+ echo '*/' >> $i.fin
+ mv $i.fin $i
+done
+
+That way I only have to look at the file. I never have to run anything.
+
+2) Rather than email me the files, copy them to my directory.
+
+I'll have a directory structure like...
+
+~/142/2011fall/$user/$assignment/$exercise.c
+
+3) I will have a command
+
+"grade"
+
+which finds the next exercise that hasn't been graded. It will open it
+up in Emacs for me and I can put at the top (really anywhere)
+
+// Grade: 0, you're a frozzle
+
+or
+
+// Grade: 1, you're a nozzle
+
+and close the file [the turnin script will have to check that they
+didn't put "// Grade" in their file.]
+
+When I want to grade, I will just do...
+
+$ grade
+[ look around in Emacs, C-x C-c ]
+$ [up] [enter]
+
+4) If I grade all the exercises for a user's assignment, it will email
+them that their grade is available (and grep all the "// Grade" lines
+from them.)
+
+5) A student can type
+
+whats-my-grade
+
+and it will give them:
+
+Current Grade if 100% on all future assignments:
+
+88.65% (B+)
+
+Current Grade if 0% on all future assignments:
+
+70.11% (C-)
+
+by reading through their directory and computing the scores. (I'll
+have to add an sexpression that says how many exercises each
+assignment has.)
+
+6) A student can type
+
+whats-my-grade 10
+
+and it will give them:
+
+For assignment 10, you got
+0: // Grade: 0, you're a frozzle
+1: // Grade: 0, not done [added automatically by the turn-in script
+because they didn't include 1.c]
+
+Total: 0/2
+
+----
+
+Perhaps when someone turns something in, it could send me an email
+with "$user has turned in assignment $n. You have $BIGNUM exercises to
+grade."
+
+~jay:
+ 142
+  2011fall
+   students
+    bjohn3x
+     0
+      0.c
+     0ex
+      5.c
