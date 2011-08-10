@@ -6,9 +6,11 @@
          "util.rkt")
 (define-runtime-path install-rkt "install.rkt")
 (define-runtime-path util-rkt "util.rkt")
+(define-runtime-path username-rkt "username.rkt")
 (define-runtime-path name-rkt "name.rkt")
 (define-runtime-path email-rkt "email.rkt")
 (define-runtime-path turnin-rkt "turnin.rkt")
+(define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path install "install")
 (define-runtime-path emacs-el "env/.emacs.el")
 (make-directory*/ignore-exists-exn "scripts")
@@ -19,6 +21,8 @@
 (file-or-directory-permissions "students" #o700)
 (replace-file "scripts/install.rkt" install-rkt #:permissions #o755)
 (replace-file "scripts/util.rkt" util-rkt #:permissions #o644)
+(replace-file "scripts/username.rkt" username-rkt #:permissions #o644)
+(replace-file "scripts/grade.rkt" grade-rkt #:permissions #o700)
 
 ;todo: replace with function
 (copy-file name-rkt "scripts/name.rkt")

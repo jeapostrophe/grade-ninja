@@ -96,3 +96,7 @@ grade."
       0.c
      0ex
       5.c
+
+-----
+
+A student can type request-graded and get the file in jay's directory copied to a timestamped directory.
