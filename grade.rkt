@@ -3,7 +3,8 @@
 (require racket/function 
          racket/system
          racket/sequence
-         "util.rkt")
+         "util.rkt"
+         "data.rkt")
 
 (define (exercise-graded? file)
   (call-with-input-file* file (curry regexp-match #rx"// Grade")))
@@ -15,16 +16,15 @@
 (define (find-ungraded-file)
   (let/ec return
     (for ([assignment assignments])
-      (for ([user-dir (in-list (directory-list student-dir))])
-        (define assignment-dir (build-path student-dir user-dir assignment))
+      (for ([user-dir (in-list (directory-list students-dir))])
+        (define assignment-dir (build-path students-dir user-dir assignment))
         (unless (assignment-graded? assignment-dir)
           (for ([exercise-file (in-directory assignment-dir)])
             (unless (exercise-graded? exercise-file)
               (return exercise-file))))))
     #f))
 
-(define (assignment-graded? assignment-dir)
-  (file-exists? (build-path assignment-dir ".graded")))
+
 
 (define (edit file)
   (system (format "emacs ~a" file)))
