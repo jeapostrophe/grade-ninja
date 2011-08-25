@@ -4,7 +4,7 @@
          racket/function
          racket/system
          racket/port
-         "util.rkt")
+         "data.rkt")
 
 (define-values (dir num optional)
   (command-line

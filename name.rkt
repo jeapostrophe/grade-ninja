@@ -2,7 +2,8 @@
 #lang racket/base
 (require racket/runtime-path
          unstable/file
-         "util.rkt")
+         "util.rkt"
+         "data.rkt")
 (make-directory*/ignore-exists-exn current-student-dir)
 (file-or-directory-permissions current-student-dir #o700)
 (define name (combined-command-line))

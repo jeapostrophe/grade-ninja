@@ -17,7 +17,9 @@
       (exit)])))
 
 (cond
-  [num
+  [(and num (assignment-graded? num))
    (display (format-assignment-grade current-student-dir num optional (num-exercises num optional)))]
+  [num
+   (printf "Assignment ~a hasn't been graded yet." num)]
   [else
    (display (format-course-grade current-student-dir))])

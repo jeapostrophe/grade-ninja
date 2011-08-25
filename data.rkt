@@ -16,7 +16,15 @@
          format-assignment-grade
          format-course-grade
          current-student-dir
-         num-exercises)
+         num-exercises
+         num-assignments
+         grade-regexp
+         parse-assignment-dir
+         current-student-name
+         current-student-email
+         system-email
+         after?
+         due-date)
 
 (struct assignment-info (num-exercises due-date num-opt-exercises opt-due-date) #:transparent)
 
@@ -26,8 +34,18 @@
 (define-runtime-path students-dir "../students")
 (define-runtime-path current-student-dir (format "../students/~a" (username)))
 (define-runtime-path assignments-file "../assignments.rktd")
+(define-runtime-path email-file "../.email")
 
 (define grade-regexp #rx"(?m:// Grade (0|1), (.*)$)")
+
+(define (current-student-name)
+  (with-input-from-file (build-path current-student-dir ".name") read-line))
+
+(define (current-student-email)
+  (with-input-from-file (build-path current-student-dir ".email") read-line))
+
+(define (system-email)
+  (with-input-from-file email-file read-line))
 
 (define/contract (read-assignment-infos) (-> (hash/c natural-number/c assignment-info?))
   (let loop ([assignment-infos (hasheq)])
@@ -81,7 +99,6 @@
 
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
-  ;(define current-course-grade (calculate-course-grade current-grades))
   (define perfect-grades (fill-grades current-grades 1))
   (define perfect-course-grade (calculate-course-grade perfect-grades))
   (define bad-grades (fill-grades current-grades 0))
@@ -96,39 +113,41 @@
   (for/hash ([assignment-dir (in-list (directory-list student-dir))] #:when (directory-exists? (build-path student-dir assignment-dir)))
     (values (path->string assignment-dir) (get-assignment-grade assignment-dir))))
 
+(define (parse-assignment-dir assignment-dir)
+  (match (path->string assignment-dir) 
+    [(regexp #rx"([0-9]+)(opt)?$" (list _ num opt))
+     (values (string->number num) (not (not opt)))]))
+
 (define/contract (get-assignment-grade assignment-dir) (path? . -> . assignment-grade?)
-  (define-values (num optional) 
-    (match (path->string assignment-dir) 
-      [(regexp #rx"([0-9]+)(opt)?$" (list _ num opt))
-       (values (string->number num) (not (not opt)))]))
+  (define-values (num optional) (parse-assignment-dir assignment-dir))
   (define total (num-exercises num optional))
   (assignment-grade (calculate-assignment-score (get-assignment-exercise-grades assignment-dir total)) total)) 
 
+(define/contract (add-grade grades num optional grade) ((hash/c string? assignment-grade?) natural-number/c boolean? number? . -> . (hash/c string? assignment-grade?))
+  (define dir (format "~a~a" num (if optional "opt" "")))
+  (define total (num-exercises num optional))
+  (hash-set grades dir (assignment-grade (if (after? (due-date num optional)) 0 (* grade total)) total)))
+
 (define/contract (fill-grades current-grades grade) ((hash/c string? assignment-grade?) number? . -> . (hash/c string? assignment-grade?))
   (for/fold ([result current-grades])
-    ([i (in-range (num-assignments))])
+    ([i (in-range 1 (add1 (num-assignments)))])
     (define dir (number->string i))
     (define opt-dir (string-append dir "opt"))
     (cond
       [(and (hash-has-key? result dir) (hash-has-key? result opt-dir)) 
        result]
       [(hash-has-key? result dir)
-       (define opt-total (num-exercises i #t))
-       (hash-set result opt-dir (assignment-grade (if (after? (due-date i #t)) 0 (* grade opt-total)) opt-total))]
+       (add-grade result i #t 0)]
       [(hash-has-key? result opt-dir)
-       (define total (num-exercises i #f))
-       (hash-set result dir (assignment-grade (if (after? (due-date i #f)) 0 (* grade total)) total))]
+       (add-grade result i #f grade)]
       [else 
-       (define opt-total (num-exercises i #t))
-       (define total (num-exercises i #f))
-       (hash-set (hash-set result dir (assignment-grade (if (after? (due-date i #f)) 0 (* grade total)) total)) opt-dir (assignment-grade (if (after? (due-date i #t)) 0 (* grade opt-total)) opt-total))
-       ])))
+       (add-grade (add-grade result i #t 0) i #f grade)])))
 
 (define/contract (calculate-course-grade grades) ((hash/c string? assignment-grade?) . -> . number?)
   (define-values (total-score _)
     (for/fold ([total-score 0]
                [extra 0])
-      ([i (in-range (sub1 (num-assignments)) -1 -1)])
+      ([i (in-range (num-assignments) 0 -1)])
       (define dir (number->string i))
       (define opt-dir (string-append dir "opt"))
       (match-define (assignment-grade score total) (hash-ref grades dir))
@@ -159,7 +178,7 @@
     [else "E"]))
    
 (define/contract (get-assignment-exercise-grades assignment-dir num-exercises) (path? natural-number/c . -> . (listof exercise-grade?)) 
-  (for/list ([i (in-range num-exercises)])
+  (for/list ([i (in-range 1 (add1 num-exercises))])
     (get-exercise-grade assignment-dir i)))
 
 (define/contract (get-exercise-grade assignment-dir num) (path? natural-number/c . -> . exercise-grade?)
@@ -168,7 +187,9 @@
     [(file-exists? exercise-file)
      (match (call-with-input-file* exercise-file (curry regexp-match grade-regexp))
        [(list _ score-byte-string comment) (exercise-grade num (string->number (bytes->string/utf-8 score-byte-string)) (bytes->string/utf-8 comment))]
-       [else (error "exercise isn't graded")])]
+       [else 
+        (printf "exercise ~a isn't graded\n" num)
+        (exit)])]
     [else
      (exercise-grade num 0 "exercise not turned in")]))
      

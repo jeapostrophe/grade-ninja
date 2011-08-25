@@ -1,6 +1,7 @@
 #!/usr/bin/env racket
 #lang racket/base
 (require racket/runtime-path
+         racket/file
          unstable/file
          racket/system
          "util.rkt")
@@ -15,6 +16,7 @@
 (define-runtime-path check-grade-rkt "check-grade.rkt")
 (define-runtime-path install "install")
 (define-runtime-path emacs-el "env/.emacs.el")
+(delete-directory/files "scripts")
 (make-directory*/ignore-exists-exn "scripts")
 (file-or-directory-permissions "scripts" #o711)
 (make-directory*/ignore-exists-exn "env")
