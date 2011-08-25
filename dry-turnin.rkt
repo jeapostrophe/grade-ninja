@@ -15,17 +15,4 @@
       (printf "~a is not a valid assignment\n" assignment)
       (exit)])))
 
-(when (after? (due-date num optional))
-  (printf "The assignment is late and will not be graded.\n")
-  (exit))
-
-(define turnin-dir (build-path current-student-dir dir))
-
-(when (directory-exists? turnin-dir)
-  (printf "The assignment was already turned in.\n")
-  (exit))
-
-(make-directory turnin-dir)
-(file-or-directory-permissions turnin-dir #o700)
-
-(compile-files dir turnin-dir (num-exercises num optional))
+(compile-files dir #f (num-exercises num optional))

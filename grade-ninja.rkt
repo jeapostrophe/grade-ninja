@@ -8,10 +8,12 @@
 (define-runtime-path install-rkt "install.rkt")
 (define-runtime-path util-rkt "util.rkt")
 (define-runtime-path data-rkt "data.rkt")
+(define-runtime-path compile-rkt "compile.rkt")
 (define-runtime-path username-rkt "username.rkt")
 (define-runtime-path name-rkt "name.rkt")
 (define-runtime-path email-rkt "email.rkt")
 (define-runtime-path turnin-rkt "turnin.rkt")
+(define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path check-grade-rkt "check-grade.rkt")
 (define-runtime-path install "install")
@@ -26,6 +28,7 @@
 (replace-file "scripts/install.rkt" install-rkt #:permissions #o755)
 (replace-file "scripts/util.rkt" util-rkt #:permissions #o644)
 (replace-file "scripts/data.rkt" data-rkt #:permissions #o644)
+(replace-file "scripts/compile.rkt"compile-rkt #:permissions #o644)
 (replace-file "scripts/username.rkt" username-rkt #:permissions #o644)
 (replace-file "scripts/grade.rkt" grade-rkt #:permissions #o700)
 
@@ -40,6 +43,7 @@
 (compile-replace-script name-rkt "name")
 (compile-replace-script email-rkt "email")
 (compile-replace-script turnin-rkt "turnin")
+(compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
 
 (replace-file "install" install #:permissions #o755)
