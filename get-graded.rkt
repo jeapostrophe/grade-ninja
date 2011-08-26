@@ -1,6 +1,7 @@
 #lang racket/base
 (require racket/cmdline
          racket/match
+         racket/file
          "data.rkt"
          "compile.rkt")
 
