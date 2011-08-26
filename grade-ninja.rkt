@@ -36,7 +36,7 @@
   (define script-file (format "scripts/~a.rkt" name))
   (copy-file existing-file script-file)
   (system (format "raco exe ~a" script-file))
-  (file-or-directory-permissions (format "scripts/~a" name) #o6711)
+  (file-or-directory-permissions (format "scripts/~a" name) #o6755)
   (delete-file script-file))
 
 ;todo: replace with function
