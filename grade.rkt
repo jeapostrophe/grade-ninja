@@ -34,7 +34,7 @@
   (exit))
 
 (define (find-ungraded-exercises assignment-dir)
-  (for/list ([exercise-file (in-directory assignment-dir)] #:when (exercise-graded? exercise-file))
+  (for/list ([exercise-file (in-directory assignment-dir)] #:unless (exercise-graded? exercise-file))
     exercise-file))
 
 (define (edit file)
