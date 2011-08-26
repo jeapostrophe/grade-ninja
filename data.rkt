@@ -150,11 +150,11 @@
       [(and (hash-has-key? result dir) (hash-has-key? result opt-dir)) 
        result]
       [(hash-has-key? result dir)
-       (add-grade result i #t 0)]
+       (add-grade result i #t grade)]
       [(hash-has-key? result opt-dir)
        (add-grade result i #f grade)]
       [else 
-       (add-grade (add-grade result i #t 0) i #f grade)])))
+       (add-grade (add-grade result i #t grade) i #f grade)])))
 
 (define/contract (calculate-course-grade grades) ((hash/c string? assignment-grade?) . -> . number?)
   (define-values (total-score _)
