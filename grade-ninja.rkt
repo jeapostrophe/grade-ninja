@@ -16,7 +16,6 @@
 (define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path check-grade-rkt "check-grade.rkt")
-(define-runtime-path install "install")
 (define-runtime-path emacs-el "env/.emacs.el")
 (when (directory-exists? "scripts")
   (delete-directory/files "scripts"))
@@ -47,8 +46,8 @@
 (compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
 
-(with-output-to-file install #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
-(file-or-directory-permissions install #o755)
+(with-output-to-file "install" #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
+(file-or-directory-permissions "install" #o755)
 
 
 (replace-file "env/.emacs.el" emacs-el #:permissions #o644)
