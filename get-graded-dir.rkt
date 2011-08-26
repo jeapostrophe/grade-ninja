@@ -25,7 +25,7 @@
 
 (define graded-dir (format "/tmp/graded-~a-~a-~a" (username) dir (current-seconds)))
 (copy-directory/files turnin-dir graded-dir)
-(file-or-directory-permissions graded-dir #o766)
+(file-or-directory-permissions graded-dir #o777)
 (for ([file (in-directory graded-dir)])
   (file-or-directory-permissions file #o644))
 
