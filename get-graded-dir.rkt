@@ -23,11 +23,12 @@
   (printf "Assignment ~a hasn't been graded yet.\n" dir)
   (exit))
 
-(define graded-dir (format "/tmp/graded-~a-~a-~a" (username) dir (current-seconds)))
-(copy-directory/files turnin-dir graded-dir)
-(file-or-directory-permissions graded-dir #o777)
-(for ([file (in-directory graded-dir)])
+(define graded-dir (format "graded-~a-~a-~a" (username) dir (current-seconds)))
+(define tmp-dir (build-path "/tmp" graded-dir))
+(copy-directory/files turnin-dir tmp-dir)
+(file-or-directory-permissions tmp-dir #o777)
+(for ([file (in-directory tmp-dir)])
   (file-or-directory-permissions file #o644))
 
 (eprintf "Graded files for assignment ~a are in ~a\n" dir graded-dir)
-(printf "~a\n" graded-dir)
+(printf "~a\n" tmp-dir)

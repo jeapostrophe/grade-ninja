@@ -55,4 +55,7 @@
 (replace-file "env/.emacs.el" emacs-el #:permissions #o644)
 (replace-file "scripts/get-graded" get-graded #:permissions #o755)
 
-(printf "students should run:\n~a\n" (build-path (current-directory) "install"))
+(printf "Grade Ninja requires:
+\tassignments.rktd: file with metadata about assignments.
+\t.email: email address grades get sent from.
+students should run:\n~a\n" (build-path (current-directory) "install"))
