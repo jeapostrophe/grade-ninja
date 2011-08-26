@@ -42,7 +42,7 @@
 
 (printf "I expect a grade line like: ~v\n" grade-regexp)
 
-(define ungraded-exercises (find-ungraded-exercises))
+(define ungraded-exercises (find-ungraded-exercises assignment-dir))
 
 (unless (empty? ungraded-exercises)
   (edit (first ungraded-exercises)))
