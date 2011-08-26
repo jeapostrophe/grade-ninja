@@ -1,3 +1,2 @@
 #!/bin/sh
 $(dirname $0)/scripts/install.rkt
-exec $SHELL -l
