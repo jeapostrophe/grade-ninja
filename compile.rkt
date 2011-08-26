@@ -21,7 +21,7 @@
     (define file (format "~a/~a.cc" dir i))
     (when (file-exists? file)
       (when (call-with-input-file* file (curry regexp-match #rx"// Grade"))
-        (printf "Files cannot contain // Grade in them.")
+        (printf "Files cannot contain // Grade in them.\n")
         (exit))
       (define output (open-output-bytes))
       (display "/* Compilation output:\n" output)

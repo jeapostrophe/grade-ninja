@@ -15,6 +15,11 @@
       (printf "~a is not a valid assignment\n" assignment)
       (exit)])))
 
+(unless (and (file-exists? (build-path current-student-dir ".email"))
+             (file-exists? (build-path current-student-dir ".name")))
+  (printf "You must enter your name and email address before turning in assignments.\n")
+  (exit))
+
 (when (after? (due-date num optional))
   (printf "The assignment is late and will not be graded.\n")
   (exit))
