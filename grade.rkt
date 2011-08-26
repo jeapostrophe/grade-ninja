@@ -3,6 +3,7 @@
 (require racket/function 
          racket/system
          racket/sequence
+         racket/list
          net/sendmail
          "data.rkt")
 
@@ -54,9 +55,9 @@
 
 (define (num-ungraded-assignments)
   (for*/fold ([num 0])
-    ([user-dir (in-list (directory-list student-dir))]
-     [assignment-dir (in-list (directory-list (build-path student-dir user-dir)))])
-    (define p (build-path student-dir user-dir assignment-dir))
+    ([user-dir (in-list (directory-list students-dir))]
+     [assignment-dir (in-list (directory-list (build-path students-dir user-dir)))])
+    (define p (build-path students-dir user-dir assignment-dir))
     (if (or (file-exists? p) (assignment-graded? p)) num (add1 num))))
 
 (when (completely-graded? assignment-dir)
