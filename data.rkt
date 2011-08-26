@@ -89,7 +89,7 @@
 (define/contract (format-assignment-grade student-dir num optional num-exercises) (path? natural-number/c boolean? natural-number/c . -> . string?)
   (define assignment-dir (build-path student-dir (format-assignment num optional)))
   (define exercise-grades (get-assignment-exercise-grades assignment-dir num-exercises))
-  (format "For assignment ~a, you got\n~a\nTotal:~a/~a" (format-assignment num optional) (foldl format-exercise-grade "" exercise-grades) (calculate-assignment-score exercise-grades) num-exercises))
+  (format "For assignment ~a, you got\n~a\nTotal:~a/~a\n" (format-assignment num optional) (foldl format-exercise-grade "" exercise-grades) (calculate-assignment-score exercise-grades) num-exercises))
 
 (define/contract (format-exercise-grade grade prefix) (exercise-grade? string? . -> . string?)
   (match-define (exercise-grade num score comment) grade)
@@ -189,7 +189,7 @@
      (match (call-with-input-file* exercise-file (curry regexp-match grade-regexp))
        [(list _ score-byte-string comment) (exercise-grade num (string->number (bytes->string/utf-8 score-byte-string)) (bytes->string/utf-8 comment))]
        [else 
-        (printf "exercise ~a isn't graded\n" num)
+        (printf "~a: exercise ~a isn't graded\n" else num)
         (exit)])]
     [else
      (exercise-grade num 0 "exercise not turned in")]))
