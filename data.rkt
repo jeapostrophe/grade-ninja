@@ -116,7 +116,7 @@
 
 (define (parse-assignment-dir assignment-dir)
   (match (path->string assignment-dir) 
-    [(regexp #rx"([0-9]+)(opt)?$" (list _ num opt))
+    [(regexp #rx"([0-9]+)(opt)?/?$" (list _ num opt))
      (values (string->number num) (not (not opt)))]))
 
 (define/contract (get-assignment-grade assignment-dir) (path? . -> . assignment-grade?)
