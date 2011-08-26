@@ -7,7 +7,7 @@
 
 (define-values (dir num optional)
   (command-line
-   #:program "turnin"
+   #:program "get-graded"
    #:args (assignment)
    (match assignment
      [(regexp #rx"^([0-9]+)(opt)?$" (list dir num opt))
