@@ -6,6 +6,7 @@
          racket/contract/region
          racket/match
          racket/function
+         racket/string
          (prefix-in 19: srfi/19)
          "username.rkt"
          (for-syntax racket/base 
@@ -101,18 +102,20 @@
 
 
 (define (format-grades grades)
-  (map (match-lambda
-         [(cons dir (assignment-grade score total))
-          (format "Assignment ~a: ~a/~a\n" dir score total)])
-       (sort (hash->list grades) string<? #:key car)))
-
+  (string-join 
+   (map (match-lambda
+          [(cons dir (assignment-grade score total))
+           (format "Assignment ~a: ~a/~a" dir score total)])
+        (sort (hash->list grades) string<? #:key car)))
+  "\n")
+  
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
   (define perfect-grades (fill-grades current-grades 1))
   (define perfect-course-grade (calculate-course-grade perfect-grades))
   (define bad-grades (fill-grades current-grades 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
-  (format "~a\nCurrent grade if 100% on all future assignments:\n\n~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n~a% (~a)\n" 
+  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments:\n\n~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n~a% (~a)\n" 
           (format-grades current-grades)
           (grade->percent perfect-course-grade) 
           (grade->letter perfect-course-grade) 
