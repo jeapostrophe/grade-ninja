@@ -15,4 +15,6 @@
       (printf "~a is not a valid assignment\n" assignment)
       (exit)])))
 
+(printf "Dry turnin of assignment ~a\n" dir)
+
 (compile-files dir #f (num-exercises num optional))
