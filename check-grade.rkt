@@ -3,23 +3,23 @@
          racket/match
          "data.rkt")
 
-(define-values (num optional)
+(define-values (dir num optional)
   (command-line
    #:program "turnin"
    #:args assignment
    (match assignment
-     [(list (regexp #rx"^([0-9]+)(opt)?$" (list _ num opt)))
-      (values (string->number num) (not (not opt)))]
+     [(list (regexp #rx"^([0-9]+)(opt)?$" (list dir num opt)))
+      (values dir (string->number num) (not (not opt)))]
      [(list) 
-      (values #f #f)]
+      (values #f #f #f)]
      [else 
       (printf "~a is not a valid assignment\n" assignment)
       (exit)])))
 
 (cond
-  [(and num (assignment-graded? num))
+  [(and num (assignment-graded? (string->path dir)))
    (display (format-assignment-grade current-student-dir num optional (num-exercises num optional)))]
-  [num
-   (printf "Assignment ~a hasn't been graded yet." num)]
+  [dir
+   (printf "Assignment ~a hasn't been graded yet." dir)]
   [else
    (display (format-course-grade current-student-dir))])
