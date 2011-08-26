@@ -47,7 +47,10 @@
 (compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
 
-(replace-file "install" install #:permissions #o755)
+(with-output-to-file install #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
+(file-or-directory-permissions install #o755)
+
+
 (replace-file "env/.emacs.el" emacs-el #:permissions #o644)
 
 (printf "students should run:\n~a\n" (build-path (current-directory) "install"))
