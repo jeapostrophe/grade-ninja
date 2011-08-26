@@ -68,7 +68,7 @@
   (mark-graded assignment-dir)
   (define-values (base name must-be-dir) (split-path assignment-dir))
   (define-values (num optional) (parse-assignment-dir assignment-dir))
-  (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" name) (file->string (build-path base ".email")) empty empty
+  (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" name) (list (file->string (build-path base ".email"))) empty empty
                      (list (format "~a," (file->string (build-path base ".name"))) (format-assignment-grade base num optional (num-exercises num optional)))))
 
 (printf "There are ~a assignments to grade.\n" (num-ungraded-assignments))
