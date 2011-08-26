@@ -106,8 +106,8 @@
    (map (match-lambda
           [(cons dir (assignment-grade score total))
            (format "Assignment ~a: ~a/~a" dir score total)])
-        (sort (hash->list grades) string<? #:key car)))
-  "\n")
+        (sort (hash->list grades) string<? #:key car))
+  "\n"))
   
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
