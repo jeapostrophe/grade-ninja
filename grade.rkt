@@ -19,10 +19,11 @@
     (for ([assignment assignments])
       (for ([user-dir (in-list (directory-list students-dir))])
         (define assignment-dir (build-path students-dir user-dir assignment))
-        (unless (assignment-graded? assignment-dir)
-          (for ([exercise-file (in-directory assignment-dir)])
-            (unless (exercise-graded? exercise-file)
-              (return exercise-file))))))
+        (when (directory-exists? assignment-dir)
+          (unless (assignment-graded? assignment-dir)
+            (for ([exercise-file (in-directory assignment-dir)])
+              (unless (exercise-graded? exercise-file)
+                (return exercise-file)))))))
     #f))
 
 
