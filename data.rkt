@@ -93,7 +93,7 @@
 
 (define/contract (format-exercise-grade grade prefix) (exercise-grade? string? . -> . string?)
   (match-define (exercise-grade num score comment) grade)
-  (format "~a~a: ~a, ~a\n" prefix num score comment))
+  (format "~aExercise ~a: ~a, ~a\n" prefix num score comment))
 
 (define/contract (calculate-assignment-score exercise-grades) ((listof exercise-grade?) . -> . natural-number/c)
   (foldl (λ (grade total) (+ (exercise-grade-score grade) total)) 0 exercise-grades))
