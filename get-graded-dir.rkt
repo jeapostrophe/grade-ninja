@@ -25,8 +25,9 @@
 
 (define graded-dir (format "/tmp/graded-~a-~a-~a" (username) dir (current-seconds)))
 (copy-directory/files turnin-dir graded-dir)
+(file-or-directory-permissions graded-dir #o766)
 (for ([file (in-directory graded-dir)])
-  (file-or-directory-permissions file #o666))
+  (file-or-directory-permissions file #o644))
 
 (eprintf "Graded files for assignment ~a are in ~a\n" dir graded-dir)
 (printf "~a\n" graded-dir)
