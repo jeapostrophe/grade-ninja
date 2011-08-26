@@ -28,7 +28,9 @@
 
 
 (define (edit file)
-  (system (format "$EDITOR ~a" file)))
+  (void (system (format "$EDITOR ~a" file))))
+
+(printf "I expect a grade line like: ~v\n" grade-regexp)
 
 (define ungraded-file (find-ungraded-file))
 
@@ -62,8 +64,9 @@
 
 (when (completely-graded? assignment-dir)
   (mark-graded assignment-dir)
-  (define-values (_ name) (split-path assignment-dir))
+  (define-values (base name must-be-dir) (split-path assignment-dir))
   (define-values (num optional) (parse-assignment-dir assignment-dir))
   (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" name) (current-student-email) empty (list (system-email)) 
                      (list (format "~a," (current-student-name)) (format-assignment-grade current-student-dir num optional (num-exercises num optional)))))
+
 (printf "There are ~a assignments to grade.\n" (num-ungraded-assignments))
