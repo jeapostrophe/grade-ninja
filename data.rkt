@@ -107,7 +107,7 @@
           [(cons dir (assignment-grade score total))
            (format "Assignment ~a: ~a/~a" dir score total)])
         (sort (hash->list grades) string<? #:key car))
-  "\n"))
+  "\n\t"))
   
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
@@ -115,11 +115,11 @@
   (define perfect-course-grade (calculate-course-grade perfect-grades))
   (define bad-grades (fill-grades current-grades 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
-  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments:\n\n~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n~a% (~a)\n" 
+  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments:\n\n\t~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
           (format-grades current-grades)
-          (grade->percent perfect-course-grade) 
+          (real->decimal-string perfect-course-grade 2) 
           (grade->letter perfect-course-grade) 
-          (grade->percent bad-course-grade)
+          (real->decimal-string bad-course-grade 2)
           (grade->letter bad-course-grade)))
 
 (define/contract (get-current-grades student-dir) (path? . -> . (hash/c string? assignment-grade?))
@@ -170,9 +170,6 @@
         [(< score total) (values (+ total-score (min total (+ score new-extra))) (max 0 (- new-extra (- total score))))]
         [else (values (+ total-score score) new-extra)])))
   (/ total-score (sub1 (num-assignments))))
-
-(define/contract (grade->percent grade) (number? . -> . number?)
-  (/ (round (* 1000 grade)) 100))
 
 (define/contract (grade->letter grade) (number? . -> . string?)
   (cond
