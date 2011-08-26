@@ -20,6 +20,7 @@
          num-assignments
          grade-regexp
          parse-assignment-dir
+         students-dir
          current-student-name
          current-student-email
          system-email
