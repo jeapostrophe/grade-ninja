@@ -105,9 +105,9 @@
   (string-join 
    (map (match-lambda
           [(cons dir (assignment-grade score total))
-           (format "Assignment ~a: ~a/~a" dir score total)])
+           (format "\tAssignment ~a: ~a/~a" dir score total)])
         (sort (hash->list grades) string<? #:key car))
-  "\n\t"))
+  "\n"))
   
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
@@ -117,9 +117,9 @@
   (define bad-course-grade (calculate-course-grade bad-grades))
   (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments:\n\n\t~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
           (format-grades current-grades)
-          (real->decimal-string perfect-course-grade 2) 
+          (real->decimal-string (* 100 perfect-course-grade) 2) 
           (grade->letter perfect-course-grade) 
-          (real->decimal-string bad-course-grade 2)
+          (real->decimal-string (* 100 bad-course-grade) 2)
           (grade->letter bad-course-grade)))
 
 (define/contract (get-current-grades student-dir) (path? . -> . (hash/c string? assignment-grade?))
@@ -166,9 +166,19 @@
       (match-define (assignment-grade score total) (hash-ref grades dir))
       (match-define (assignment-grade opt-score opt-total) (hash-ref grades opt-dir))
       (define new-extra (+ opt-score extra))
-      (cond
-        [(< score total) (values (+ total-score (min total (+ score new-extra))) (max 0 (- new-extra (- total score))))]
-        [else (values (+ total-score score) new-extra)])))
+      
+      (define effective-score
+        (if (< score total)
+            (min total (+ score new-extra))
+            score))
+      (define extra-after-grace
+        (- new-extra
+           (- effective-score score)))
+      
+      (values (+ total-score
+                 (/ effective-score
+                    total))
+              extra-after-grace)))
   (/ total-score (sub1 (num-assignments))))
 
 (define/contract (grade->letter grade) (number? . -> . string?)
