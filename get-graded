@@ -1,2 +1,2 @@
 #!/bin/sh
-mv $(get-graded-dir $*) .
+mv $(get-graded-dir $*) . 2> /dev/null
