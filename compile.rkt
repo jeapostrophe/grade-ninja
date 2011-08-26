@@ -26,15 +26,16 @@
       (define output (open-output-bytes))
       (display "/* Compilation output:\n" output)
       (define compile-command (format "g++ ~a -o ~a/~a" file dir i))
-      (printf "~a\n" compile-command)
+      (printf "Compiling exercise ~a: ~a\n" i compile-command)
       (define compile-result (system/capture-output compile-command output))
       (display "*/\n" output)
       (when (zero? compile-result)
         (display "/* Program output:\n" output)
         (define run-command (format "~a/~a" dir i))
-        (printf "~a\n" run-command)
+        (printf "Running exercise ~a: ~a\n" i run-command)
         (system/capture-output run-command output)
         (display "*/\n" output))
+      (printf "\n")
       (when turnin-dir
         (define turnin-file (build-path turnin-dir (format "~a.cc" i)))
         (with-output-to-file turnin-file

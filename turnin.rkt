@@ -25,6 +25,8 @@
   (printf "The assignment was already turned in.\n")
   (exit))
 
+(printf "Turning in exercise ~a\n\n" dir)
+
 (make-directory turnin-dir)
 (file-or-directory-permissions turnin-dir #o700)
 
