@@ -99,13 +99,21 @@
 (define/contract (calculate-assignment-score exercise-grades) ((listof exercise-grade?) . -> . natural-number/c)
   (foldl (λ (grade total) (+ (exercise-grade-score grade) total)) 0 exercise-grades))
 
+
+(define (format-grades grades)
+  (map (match-lambda
+         [(cons dir (assignment-grade score total))
+          (format "Assignment ~a: ~a/~a\n" dir score total)])
+       (sort (hash->list grades) string<? #:key car)))
+
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
   (define perfect-grades (fill-grades current-grades 1))
   (define perfect-course-grade (calculate-course-grade perfect-grades))
   (define bad-grades (fill-grades current-grades 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
-  (format "Current grade if 100% on all future assignments:\n\n~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n~a% (~a)\n" 
+  (format "~a\nCurrent grade if 100% on all future assignments:\n\n~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n~a% (~a)\n" 
+          (format-grades current-grades)
           (grade->percent perfect-course-grade) 
           (grade->letter perfect-course-grade) 
           (grade->percent bad-course-grade)
@@ -113,7 +121,7 @@
 
 (define/contract (get-current-grades student-dir) (path? . -> . (hash/c string? assignment-grade?))
   (for/hash ([assignment-dir (in-list (directory-list student-dir))] #:when (directory-exists? (build-path student-dir assignment-dir)))
-    (values (path->string assignment-dir) (get-assignment-grade assignment-dir))))
+    (values (path->string assignment-dir) (get-assignment-grade (build-path student-dir assignment-dir)))))
 
 (define (parse-assignment-dir assignment-dir)
   (match (path->string assignment-dir) 
@@ -190,7 +198,7 @@
      (match (call-with-input-file* exercise-file (curry regexp-match grade-regexp))
        [(list _ score-byte-string comment) (exercise-grade num (string->number (bytes->string/utf-8 score-byte-string)) (bytes->string/utf-8 comment))]
        [else 
-        (printf "~v: exercise ~a isn't graded\n" (list exercise-file else (file->string exercise-file)) num)
+        (printf "exercise ~a isn't graded\n" num)
         (exit)])]
     [else
      (exercise-grade num 0 "exercise not turned in")]))
