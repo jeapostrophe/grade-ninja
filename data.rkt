@@ -115,7 +115,7 @@
   (define perfect-course-grade (calculate-course-grade perfect-grades))
   (define bad-grades (fill-grades current-grades 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
-  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments:\n\n\t~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
+  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments (including optional assignments):\n\n\t~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
           (format-grades current-grades)
           (real->decimal-string (* 100 perfect-course-grade) 2) 
           (grade->letter perfect-course-grade) 
