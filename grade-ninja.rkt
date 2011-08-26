@@ -16,8 +16,9 @@
 (define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path check-grade-rkt "check-grade.rkt")
-(define-runtime-path get-graded-rkt "get-graded.rkt")
+(define-runtime-path get-graded-dir-rkt "get-graded-dir.rkt")
 (define-runtime-path emacs-el "env/.emacs.el")
+(define-runtime-path get-graded "get-graded")
 (when (directory-exists? "scripts")
   (delete-directory/files "scripts"))
 (make-directory*/ignore-exists-exn "scripts")
@@ -45,12 +46,13 @@
 (compile-replace-script turnin-rkt "turnin")
 (compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
-(compile-replace-script get-graded-rkt "get-graded")
+(compile-replace-script get-graded-dir-rkt "get-graded-dir")
 
 (with-output-to-file "install" #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
 (file-or-directory-permissions "install" #o755)
 
 
 (replace-file "env/.emacs.el" emacs-el #:permissions #o644)
+(replace-file "scripts/get-graded" get-graded #:permissions #o755)
 
 (printf "students should run:\n~a\n" (build-path (current-directory) "install"))
