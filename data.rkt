@@ -1,6 +1,7 @@
 #lang racket/base
 (require racket/runtime-path
          racket/list
+         racket/file
          racket/contract
          racket/contract/region
          racket/match
@@ -189,7 +190,7 @@
      (match (call-with-input-file* exercise-file (curry regexp-match grade-regexp))
        [(list _ score-byte-string comment) (exercise-grade num (string->number (bytes->string/utf-8 score-byte-string)) (bytes->string/utf-8 comment))]
        [else 
-        (printf "~a: exercise ~a isn't graded\n" else num)
+        (printf "~v: exercise ~a isn't graded\n" (list exercise-file else (file->string exercise-file)) num)
         (exit)])]
     [else
      (exercise-grade num 0 "exercise not turned in")]))
