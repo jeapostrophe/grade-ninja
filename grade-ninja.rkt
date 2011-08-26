@@ -16,6 +16,7 @@
 (define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path check-grade-rkt "check-grade.rkt")
+(define-runtime-path get-graded-rkt "get-graded.rkt")
 (define-runtime-path emacs-el "env/.emacs.el")
 (when (directory-exists? "scripts")
   (delete-directory/files "scripts"))
@@ -39,12 +40,12 @@
   (file-or-directory-permissions (format "scripts/~a" name) #o6755)
   (delete-file script-file))
 
-;todo: replace with function
 (compile-replace-script name-rkt "name")
 (compile-replace-script email-rkt "email")
 (compile-replace-script turnin-rkt "turnin")
 (compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
+(compile-replace-script get-graded-rkt "get-graded")
 
 (with-output-to-file "install" #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
 (file-or-directory-permissions "install" #o755)
