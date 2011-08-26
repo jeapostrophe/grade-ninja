@@ -123,7 +123,7 @@
           (grade->letter bad-course-grade)))
 
 (define/contract (get-current-grades student-dir) (path? . -> . (hash/c string? assignment-grade?))
-  (for/hash ([assignment-dir (in-list (directory-list student-dir))] #:when (directory-exists? (build-path student-dir assignment-dir)))
+  (for/hash ([assignment-dir (in-list (directory-list student-dir))] #:when (assignment-graded? (build-path student-dir assignment-dir)))
     (values (path->string assignment-dir) (get-assignment-grade (build-path student-dir assignment-dir)))))
 
 (define (parse-assignment-dir assignment-dir)
