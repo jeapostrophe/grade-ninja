@@ -111,12 +111,22 @@
   
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
-  (define perfect-grades (fill-grades current-grades 1))
+  (define perfect/opt-grades (fill-grades current-grades 1 1))
+  (define perfect/opt-course-grade (calculate-course-grade perfect/opt-grades))
+  (define perfect-grades (fill-grades current-grades 1 0))
   (define perfect-course-grade (calculate-course-grade perfect-grades))
-  (define bad-grades (fill-grades current-grades 0))
+  (define bad-grades (fill-grades current-grades 0 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
-  (format "Current assignment grades:\n~a\n\nCurrent grade if 100% on all future assignments (including optional assignments):\n\n\t~a% (~a)\n\nCurrent grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
+  (format "Current assignment grades:\n~a
+
+Current grade if 100% on all future assignments (including optional assignments):\n\n\t~a% (~a)
+
+Current grade if 100% on all future assignments (NOT including optional assignments):\n\n\t~a% (~a)
+
+Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
           (format-grades current-grades)
+          (real->decimal-string (* 100 perfect/opt-course-grade) 2) 
+          (grade->letter perfect/opt-course-grade) 
           (real->decimal-string (* 100 perfect-course-grade) 2) 
           (grade->letter perfect-course-grade) 
           (real->decimal-string (* 100 bad-course-grade) 2)
@@ -141,7 +151,7 @@
   (define total (num-exercises num optional))
   (hash-set grades dir (assignment-grade (if (after? (due-date num optional)) 0 (* grade total)) total)))
 
-(define/contract (fill-grades current-grades grade) ((hash/c string? assignment-grade?) number? . -> . (hash/c string? assignment-grade?))
+(define/contract (fill-grades current-grades grade opt-grade) ((hash/c string? assignment-grade?) number? number? . -> . (hash/c string? assignment-grade?))
   (for/fold ([result current-grades])
     ([i (in-range 1 (add1 (num-assignments)))])
     (define dir (number->string i))
@@ -150,11 +160,11 @@
       [(and (hash-has-key? result dir) (hash-has-key? result opt-dir)) 
        result]
       [(hash-has-key? result dir)
-       (add-grade result i #t grade)]
+       (add-grade result i #t opt-grade)]
       [(hash-has-key? result opt-dir)
        (add-grade result i #f grade)]
       [else 
-       (add-grade (add-grade result i #t grade) i #f grade)])))
+       (add-grade (add-grade result i #t opt-grade) i #f grade)])))
 
 (define/contract (calculate-course-grade grades) ((hash/c string? assignment-grade?) . -> . number?)
   (define-values (total-score _)

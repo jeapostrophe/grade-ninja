@@ -48,7 +48,13 @@
 (compile-replace-script check-grade-rkt "check-grade")
 (compile-replace-script get-graded-dir-rkt "get-graded-dir")
 
-(with-output-to-file "install" #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" (path->complete-path (find-system-path 'exec-file)))))
+(define exec-file (find-system-path 'exec-file))
+(define racket-path
+  (if (equal? exec-file (string->path "racket"))
+      (find-executable-path exec-file)
+      (path->complete-path exec-file)))
+
+(with-output-to-file "install" #:exists 'truncate (λ () (printf "#!/bin/sh\n~a -t $(dirname $0)/scripts/install.rkt" racket-path)))
 (file-or-directory-permissions "install" #o755)
 
 
