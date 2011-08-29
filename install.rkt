@@ -16,7 +16,7 @@
 (make-file-or-directory-link (simplify-path emacs-el-path) home-emacs-el)
 
 (define (print-path)
-  (printf "export PATH=~a:$PATH\n" (simplify-path scripts-path)))
+  (printf "export PATH=~a:$PATH\nexport PS1='\\u@\\h:\\W $ '" (simplify-path scripts-path)))
 
 (with-output-to-file home-profile print-path)
 (with-output-to-file home-bashrc print-path)
