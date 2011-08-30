@@ -15,6 +15,7 @@
 (define-runtime-path turnin-rkt "turnin.rkt")
 (define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
+(define-runtime-path assignments-rkt "assignments.rkt")
 (define-runtime-path check-grade-rkt "check-grade.rkt")
 (define-runtime-path get-graded-dir-rkt "get-graded-dir.rkt")
 (define-runtime-path emacs-el "env/.emacs.el")
@@ -47,6 +48,7 @@
 (compile-replace-script dry-turnin-rkt "dry-turnin")
 (compile-replace-script check-grade-rkt "check-grade")
 (compile-replace-script get-graded-dir-rkt "get-graded-dir")
+(compile-replace-script assignments-rkt "assignments")
 
 (define exec-file (find-system-path 'exec-file))
 (define racket-path
