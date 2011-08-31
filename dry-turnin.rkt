@@ -17,4 +17,4 @@
 
 (printf "Dry turnin of assignment ~a\n\n" dir)
 
-(compile-files dir #f (num-exercises num optional))
+(compile-files dir #f (exercise-seq num optional))

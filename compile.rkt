@@ -16,8 +16,8 @@
   (close-input-port serr)
   (proc 'exit-code))
 
-(define (compile-files dir turnin-dir num-exercises)
-  (for ([i (in-range 1 (add1 num-exercises))])
+(define (compile-files dir turnin-dir exercises)
+  (for ([i exercises])
     (define file (format "~a/~a.cc" dir i))
     (when (file-exists? file)
       (when (call-with-input-file* file (curry regexp-match #rx"// Grade"))

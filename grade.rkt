@@ -61,7 +61,7 @@
   (define-values (base name must-be-dir) (split-path assignment-dir))
   (define-values (num optional) (parse-assignment-dir assignment-dir))
   (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" name) (list (file->string (build-path base ".email"))) empty empty
-                     (list (format "~a," (file->string (build-path base ".name"))) (format-assignment-grade base num optional (num-exercises num optional)))))
+                     (list (format "~a," (file->string (build-path base ".name"))) (format-assignment-grade base num optional))))
 
 (define (num-ungraded-assignments)
   (for*/fold ([num 0])

@@ -39,7 +39,7 @@
 (unless incomplete?
   (define missing?
     (for/fold ([missing? #f])
-      ([i (in-range 1 (add1 (num-exercises num optional)))])
+      ([i (exercise-seq num optional)])
       (if (file-exists? (build-path dir (format "~a.cc" i)))
           missing?
           (begin
@@ -54,4 +54,4 @@
 (make-directory turnin-dir)
 (file-or-directory-permissions turnin-dir #o700)
 
-(compile-files dir turnin-dir (num-exercises num optional))
+(compile-files dir turnin-dir (exercise-seq num optional))

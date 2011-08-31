@@ -19,6 +19,7 @@
          format-course-grade
          current-student-dir
          num-exercises
+         exercise-seq
          num-assignments
          grade-regexp
          parse-assignment-dir
@@ -88,9 +89,9 @@
 (define/contract (assignment-graded? assignment-dir) (path? . -> . boolean?)
   (file-exists? (build-path assignment-dir ".graded")))
 
-(define/contract (format-assignment-grade student-dir num optional num-exercises) (path? natural-number/c boolean? natural-number/c . -> . string?)
+(define/contract (format-assignment-grade student-dir num optional) (path? natural-number/c boolean? . -> . string?)
   (define assignment-dir (build-path student-dir (format-assignment num optional)))
-  (define exercise-grades (get-assignment-exercise-grades assignment-dir num-exercises))
+  (define exercise-grades (get-assignment-exercise-grades assignment-dir (exercise-seq num optional)))
   (format "For assignment ~a, you got\n~a\nTotal:~a/~a\n" (format-assignment num optional) (foldl format-exercise-grade "" exercise-grades) (calculate-assignment-score exercise-grades) num-exercises))
 
 (define/contract (format-exercise-grade grade prefix) (exercise-grade? string? . -> . string?)
@@ -141,10 +142,15 @@ Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n"
     [(regexp #rx"([0-9]+)(opt)?/?$" (list _ num opt))
      (values (string->number num) (not (not opt)))]))
 
+(define (exercise-seq num optional)
+  (if optional 
+      (in-range (add1 (num-exercises num #f)) (+ 1 (num-exercises num #f) (num-exercises num #t)))
+      (in-range 1 (add1 (num-exercises num #f)))))
+
 (define/contract (get-assignment-grade assignment-dir) (path? . -> . assignment-grade?)
   (define-values (num optional) (parse-assignment-dir assignment-dir))
   (define total (num-exercises num optional))
-  (assignment-grade (calculate-assignment-score (get-assignment-exercise-grades assignment-dir total)) total)) 
+  (assignment-grade (calculate-assignment-score (get-assignment-exercise-grades assignment-dir (exercise-seq num optional))) total)) 
 
 (define/contract (add-grade grades num optional grade) ((hash/c string? assignment-grade?) natural-number/c boolean? number? . -> . (hash/c string? assignment-grade?))
   (define dir (format "~a~a" num (if optional "opt" "")))
@@ -207,8 +213,8 @@ Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n"
     [(>= grade 0.60) "D-"]
     [else "E"]))
    
-(define/contract (get-assignment-exercise-grades assignment-dir num-exercises) (path? natural-number/c . -> . (listof exercise-grade?)) 
-  (for/list ([i (in-range 1 (add1 num-exercises))])
+(define/contract (get-assignment-exercise-grades assignment-dir exercises) (path? sequence? . -> . (listof exercise-grade?)) 
+  (for/list ([i exercises])
     (get-exercise-grade assignment-dir i)))
 
 (define/contract (get-exercise-grade assignment-dir num) (path? natural-number/c . -> . exercise-grade?)

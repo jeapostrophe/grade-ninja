@@ -18,7 +18,7 @@
 
 (cond
   [(and dir (assignment-graded? (build-path current-student-dir dir)))
-   (display (format-assignment-grade current-student-dir num optional (num-exercises num optional)))]
+   (display (format-assignment-grade current-student-dir num optional))]
   [dir
    (printf "Assignment ~a hasn't been graded yet.\n" dir)]
   [else
