@@ -78,7 +78,7 @@
 
 (define/contract (due-date num optional) (natural-number/c boolean? . -> . 19:date?)
   (define infos (get-assignment-infos assignments-file))
-  ((if optional assignment-info-due-date assignment-info-opt-due-date) (hash-ref infos num)))
+  ((if optional assignment-info-opt-due-date assignment-info-due-date) (hash-ref infos num)))
 
 (define/contract (vector->date v) (vector? . -> . 19:date?)
   (call-with-values (λ () (vector->values v 1)) 19:make-date))
