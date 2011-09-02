@@ -55,3 +55,5 @@
 (file-or-directory-permissions turnin-dir #o700)
 
 (compile-files dir turnin-dir (exercise-seq num optional))
+
+(printf "Assignment ~a has been turned in successfully\n" dir)
