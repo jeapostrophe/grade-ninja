@@ -1,6 +1,7 @@
 #lang racket/base
 (require racket/cmdline
          racket/match
+         racket/file
          "data.rkt"
          "compile.rkt")
 
@@ -54,6 +55,11 @@
 (make-directory turnin-dir)
 (file-or-directory-permissions turnin-dir #o700)
 
-(compile-files dir turnin-dir (exercise-seq num optional))
+(define success? (compile-files dir turnin-dir (exercise-seq num optional)))
 
-(printf "Assignment ~a has been turned in successfully\n" dir)
+(cond
+  [(or success? incomplete?)
+   (printf "Assignment ~a has been turned in successfully\n" dir)]
+  [else
+   (delete-directory/files turnin-dir)
+   (printf "There were errors compiling your programs, to turn the assignment in anyway, run\n\tturnin ~a incomplete\n" dir)])

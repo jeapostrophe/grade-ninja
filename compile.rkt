@@ -17,6 +17,7 @@
   (proc 'exit-code))
 
 (define (compile-files dir turnin-dir exercises)
+  (define success? #t)
   (for ([i exercises])
     (define file (format "~a/~a.cc" dir i))
     (when (file-exists? file)
@@ -29,12 +30,14 @@
       (printf "Compiling exercise ~a: ~a\n" i compile-command)
       (define compile-result (system/capture-output compile-command output))
       (display "*/\n" output)
-      (when (zero? compile-result)
-        (display "/* Program output:\n" output)
-        (define run-command (format "~a/~a" dir i))
-        (printf "Running exercise ~a: ~a\n" i run-command)
-        (system/capture-output run-command output)
-        (display "*/\n" output))
+      (cond
+        [(zero? compile-result)
+         (display "/* Program output:\n" output)
+         (define run-command (format "~a/~a" dir i))
+         (printf "Running exercise ~a: ~a\n" i run-command)
+         (system/capture-output run-command output)
+         (display "*/\n" output)]
+        [else (set! success? #f)])
       (printf "\n")
       (when turnin-dir
         (define turnin-file (build-path turnin-dir (format "~a.cc" i)))
@@ -43,4 +46,5 @@
             (display (get-output-bytes output))
             (with-input-from-file file 
               (λ () (copy-port (current-input-port) (current-output-port))))))
-        (file-or-directory-permissions turnin-file #o600)))))
+        (file-or-directory-permissions turnin-file #o600))))
+  success?)

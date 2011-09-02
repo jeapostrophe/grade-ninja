@@ -42,4 +42,11 @@
 
 (printf "Dry turnin of assignment ~a\n\n" dir)
 
-(compile-files dir #f (exercise-seq num optional))
+(define success? (compile-files dir #f (exercise-seq num optional)))
+
+
+(cond
+  [success?
+   (printf "Assignment ~a compiled successfully\n" dir)]
+  [else
+   (printf "There were errors compiling your programs\n")])
