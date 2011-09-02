@@ -92,7 +92,11 @@
 (define/contract (format-assignment-grade student-dir num optional) (path? natural-number/c boolean? . -> . string?)
   (define assignment-dir (build-path student-dir (format-assignment num optional)))
   (define exercise-grades (get-assignment-exercise-grades assignment-dir (exercise-seq num optional)))
-  (format "For assignment ~a, you got\n~a\nTotal:~a/~a\n" (format-assignment num optional) (foldl format-exercise-grade "" exercise-grades) (calculate-assignment-score exercise-grades) num-exercises))
+  (format "For assignment ~a, you got\n~a\nTotal:~a/~a\n" 
+          (format-assignment num optional) 
+          (foldl format-exercise-grade "" exercise-grades) 
+          (calculate-assignment-score exercise-grades) 
+          (num-exercises num optional)))
 
 (define/contract (format-exercise-grade grade prefix) (exercise-grade? string? . -> . string?)
   (match-define (exercise-grade num score comment) grade)
