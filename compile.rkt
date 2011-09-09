@@ -8,9 +8,13 @@
 
 (define (system/capture-output command out)
   (match-define (list sout sin _ serr proc) (process command))
-  (copy-port serr (current-error-port) out)
-  (copy-port sout (current-output-port) out) 
+  (define sin-thread (thread (λ () (copy-port (current-input-port) sin out))))
+  (define serr-thread (thread (λ () (copy-port serr (current-error-port) out))))
+  (define sout-thread (thread (λ () (copy-port sout (current-output-port) out))))
   (proc 'wait)
+  (kill-thread sin-thread)
+  (kill-thread serr-thread)
+  (kill-thread sout-thread)
   (close-input-port sout)
   (close-output-port sin)
   (close-input-port serr)
@@ -37,7 +41,9 @@
          (printf "Running exercise ~a: ~a\n" i run-command)
          (system/capture-output run-command output)
          (display "*/\n" output)]
-        [else (set! success? #f)])
+        [else 
+         (set! success? #f)
+         (display "// Grade 0, compilation failed\n" output)])
       (printf "\n")
       (when turnin-dir
         (define turnin-file (build-path turnin-dir (format "~a.cc" i)))
