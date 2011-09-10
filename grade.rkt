@@ -6,7 +6,6 @@
          racket/list
          racket/file
          net/sendmail
-         "username.rkt"
          "data.rkt")
 
 (define (exercise-graded? file)
@@ -46,7 +45,7 @@
 (define ungraded-exercises (find-ungraded-exercises assignment-dir))
 
 (unless (empty? ungraded-exercises)
-  (edit (first (sort ungraded-exercises string<?))))
+  (edit (first (sort ungraded-exercises string<? #:key path->string))))
 
 (define (completely-graded? dir)
   (for/and ([exercise-file (in-directory dir)])
@@ -59,10 +58,11 @@
 
 (when (completely-graded? assignment-dir)
   (mark-graded assignment-dir)
-  (define-values (base name must-be-dir) (split-path assignment-dir))
+  (define-values (base dir must-be-dir) (split-path assignment-dir))
+  (define-values (students-dir student-username must-be-dir2) (split-path base))
   (define-values (num optional) (parse-assignment-dir assignment-dir))
-  (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" name) (list (file->string (build-path base ".email"))) empty empty
-                     (list (format "~a (~a)," (file->string (build-path base ".name")) (username)) (format-assignment-grade base num optional))))
+  (send-mail-message (system-email) (format "[CS142] Assignment ~a graded" dir) (list (file->string (build-path base ".email"))) empty empty
+                     (list (format "~a (~a)," (file->string (build-path base ".name")) student-username) (format-assignment-grade base num optional))))
 
 (define (num-ungraded-assignments)
   (for*/fold ([num 0])
