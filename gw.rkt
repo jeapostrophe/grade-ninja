@@ -117,39 +117,48 @@
 
 (define grade-pth "/users/faculty/jay/courses/2011/fall/142/scripts/grade.rkt")
 (define (start req)
-  (with-handlers ([exn? void])
-    (define port (+ 9000 (random 100)))
-    (define l (tcp-listen port 4 #t #f))
-    (putenv "EDITOR" (format "racket -t ~a -- ~a"
-                             gw-helper-pth
-                             port))
-    (define-values (sp stdout stdin stderr)
-      (subprocess #f #f #f
-                  "/users/faculty/jay/local/racket/bin/racket"
-                  "-t"
-                  grade-pth))
-    (define-values (from to) (tcp-accept l))
+  (define port (+ 9000 (random 100)))
+  (define l (tcp-listen port 4 #t #f))
+  (putenv "EDITOR" (format "racket -t ~a -- ~a"
+                           gw-helper-pth
+                           port))
+  (define-values (sp stdout stdin stderr)
+    (subprocess #f #f #f
+                "/users/faculty/jay/local/racket/bin/racket"
+                "-t"
+                grade-pth))
 
-    (define pth (read from))
+  (sync
+   (handle-evt
+    sp
+    (lambda _
+      (response/xexpr
+       `(html (head (title "No assignments available"))
+              (body (h1 "All assignments are currently graded."))))))
+   (handle-evt
+    (tcp-accept-evt l)
+    (match-lambda
+     [(list from to)
+      (define pth (read from))
 
-    (show-file pth)
+      (show-file pth)
 
-    (write #t to)
-    (flush-output to)
-    (close-input-port from)
-    (close-output-port to)
+      (write #t to)
+      (flush-output to)
+      (close-input-port from)
+      (close-output-port to)
 
-    (tcp-close l)
+      (tcp-close l)
 
-    (subprocess-wait sp)
+      (subprocess-wait sp)
 
-    (match (third (port->lines stdout))
-      [(regexp #rx"There are ([0-9]+) ass" (list _ (app string->number x)))
-       (set! how-many-more x)]
-      [x
-       (eprintf "Got ~v\n" x)]))
-  
-  (redirect-to (->url weird (current-seconds))))
+      (match (third (port->lines stdout))
+        [(regexp #rx"There are ([0-9]+) ass" (list _ (app string->number x)))
+         (set! how-many-more x)]
+        [x
+         (eprintf "Got ~v\n" x)])
+      
+      (redirect-to (->url weird (current-seconds)))]))))
 
 (define (weird req i)
   (start req))
