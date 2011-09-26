@@ -16,6 +16,7 @@
     "Missing purpose statement"
     "Missing template"
     "Incorrect template"
+    "Disobeyed template"
     "No data definition"
     "Incorrect data definition"
     "No examples"
