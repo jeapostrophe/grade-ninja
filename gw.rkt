@@ -117,9 +117,9 @@
       (displayln code))))
 
 (define grade-pth "/users/faculty/jay/courses/2011/fall/142/scripts/grade.rkt")
+(define port (+ 9000 (random 100)))
+(define l (tcp-listen port 4 #t #f))
 (define (start req)
-  (define port (+ 9000 (random 100)))
-  (define l (tcp-listen port 4 #t #f))
   (putenv "EDITOR" (format "racket -t ~a -- ~a"
                            gw-helper-pth
                            port))
@@ -149,8 +149,6 @@
       (close-input-port from)
       (close-output-port to)
 
-      (tcp-close l)
-
       (subprocess-wait sp)
 
       (match (third (port->lines stdout))
@@ -175,3 +173,5 @@
                #:launch-browser? #f
                #:servlet-regexp #rx""
                #:port 8080)
+
+(tcp-close l)
