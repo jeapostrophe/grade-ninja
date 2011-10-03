@@ -1,7 +1,6 @@
 #lang racket/base
 (require racket/runtime-path
          racket/list
-         racket/file
          racket/contract
          racket/contract/region
          racket/match
@@ -19,6 +18,7 @@
          format-course-grade
          current-student-dir
          num-exercises
+         get-assignment-infos
          exercise-seq
          num-assignments
          grade-regexp
@@ -28,16 +28,25 @@
          current-student-email
          system-email
          after?
-         due-date)
+         due-date
+         toplevel-dir)
 
 (struct assignment-info (num-exercises due-date num-opt-exercises opt-due-date) #:transparent)
 
 (struct exercise-grade (num score comment) #:transparent)
 (struct assignment-grade (score total) #:transparent)
 
-(define-runtime-path students-dir "../students")
+(define-runtime-path toplevel-runtime-path "..")
+(define toplevel-dir (make-parameter toplevel-runtime-path))
+
+(define (students-dir)
+  (build-path (toplevel-dir) "students"))
+
+(define (assignments-file)
+  (build-path (toplevel-dir) "assignments.rktd"))
+
+;(define-runtime-path students-dir "../students")
 (define-runtime-path current-student-dir (format "../students/~a" (username)))
-(define-runtime-path assignments-file "../assignments.rktd")
 (define-runtime-path email-file "../.email")
 
 (define grade-regexp #rx"(?m:// Grade (0|1), (.*)$)")
@@ -65,19 +74,20 @@
 
 (define assignment-infos (box #f))
 
-(define/contract (get-assignment-infos file) (path? . -> . (hash/c natural-number/c assignment-info?))
+(define/contract (get-assignment-infos) (-> (hash/c natural-number/c assignment-info?))
   (define infos (unbox assignment-infos))
-  (if infos infos (with-input-from-file file read-assignment-infos)))
+  (if infos infos (with-input-from-file (assignments-file) read-assignment-infos)))
 
 (define/contract (num-exercises num optional) (natural-number/c boolean? . -> . natural-number/c)
-  (define infos (get-assignment-infos assignments-file))
-  ((if optional assignment-info-num-opt-exercises assignment-info-num-exercises) (hash-ref infos num)))
+  ((if optional 
+       assignment-info-num-opt-exercises 
+       assignment-info-num-exercises) (hash-ref (get-assignment-infos) num)))
 
 (define/contract (num-assignments) (-> natural-number/c)
-  (hash-count (get-assignment-infos assignments-file)))
+  (hash-count (get-assignment-infos)))
 
 (define/contract (due-date num optional) (natural-number/c boolean? . -> . 19:date?)
-  (define infos (get-assignment-infos assignments-file))
+  (define infos (get-assignment-infos))
   ((if optional assignment-info-opt-due-date assignment-info-due-date) (hash-ref infos num)))
 
 (define/contract (vector->date v) (vector? . -> . 19:date?)

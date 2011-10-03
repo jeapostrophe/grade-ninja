@@ -19,8 +19,8 @@
 (define (find-ungraded-assignment)
   (let/ec return
     (for ([assignment assignments])
-      (for ([user-dir (in-list (directory-list students-dir))])
-        (define assignment-dir (build-path students-dir user-dir assignment))
+      (for ([user-dir (in-list (directory-list (students-dir)))])
+        (define assignment-dir (build-path (students-dir) user-dir assignment))
         (when (directory-exists? assignment-dir)
           (unless (assignment-graded? assignment-dir)
             (return assignment-dir)))))
@@ -66,9 +66,9 @@
 
 (define (num-ungraded-assignments)
   (for*/fold ([num 0])
-    ([user-dir (in-list (directory-list students-dir))]
-     [assignment-dir (in-list (directory-list (build-path students-dir user-dir)))])
-    (define p (build-path students-dir user-dir assignment-dir))
+    ([user-dir (in-list (directory-list (students-dir)))]
+     [assignment-dir (in-list (directory-list (build-path (students-dir) user-dir)))])
+    (define p (build-path (students-dir) user-dir assignment-dir))
     (if (or (file-exists? p) (assignment-graded? p)) num (add1 num))))
 
 (printf "There are ~a assignments to grade.\n" (num-ungraded-assignments))
