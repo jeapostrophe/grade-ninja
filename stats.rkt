@@ -165,7 +165,7 @@
   (string-append (real->decimal-string (* 100 n)) "%"))
 
 (define (format-course-stats/grades label grades)
-  (format "~a:\n\tMin: ~a\tMean: ~a\tMedian ~a\tMax: ~a"
+  (format "~a:\n\tMin: ~a\tMean: ~a\tMedian: ~a\tMax: ~a"
           label
           (percentage (argmin values grades))
           (percentage (mean grades))
