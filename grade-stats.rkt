@@ -17,4 +17,4 @@
 
 (cond
   [an-assignment (display (format-assignment-stats an-assignment))]
-  [else (void)])
+  [else (display (format-course-stats))])

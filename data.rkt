@@ -29,7 +29,10 @@
          system-email
          after?
          due-date
-         toplevel-dir)
+         toplevel-dir
+         get-current-grades
+         calculate-course-grade
+         fill-grades)
 
 (struct assignment-info (num-exercises due-date num-opt-exercises opt-due-date) #:transparent)
 

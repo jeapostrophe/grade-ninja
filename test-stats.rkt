@@ -11,37 +11,37 @@
    =>
 "Statistics for Assignment 1:
 \tTurned in:\t10/17
-\tGraded:\t\t6/10
+\tGraded:\t\t8/10
 
 \tPossible:\t6
-\tMean:\t\t7/6
-\tMedian:\t\t1
-\tMode:\t\t0
-\tMin:\t\t0
-\tMax:\t\t4
+\tMean:\t\t0.88
+\tMedian:\t\t0.00
+\tMode:\t\t0.00
+\tMin:\t\t0.00
+\tMax:\t\t4.00
 
 Exercise 1:
-\tMean: 1/2
+\tMean: 0.375
 \tCommon Comments: exercise not turned in, you win
 
 Exercise 2:
-\tMean: 1/3
+\tMean: 0.250
 \tCommon Comments: exercise not turned in, you win again
 
 Exercise 3:
-\tMean: 1/6
+\tMean: 0.125
 \tCommon Comments: exercise not turned in, you win
 
 Exercise 4:
-\tMean: 1/6
+\tMean: 0.125
 \tCommon Comments: exercise not turned in, you win
 
 Exercise 5:
-\tMean: 0
+\tMean: 0.000
 \tCommon Comments: exercise not turned in
 
 Exercise 6:
-\tMean: 0
+\tMean: 0.000
 \tCommon Comments: exercise not turned in
 "
 
@@ -53,17 +53,11 @@ Exercise 6:
 4
 
 (assignment-scores (assignment "1" 1 #f)) =>
-'(4 1 2 0 0 0)
+'(4 1 2 0 0 0 0 0)
 
-(format-assignment-exercise-stats (assignment "1" 1 #f)) =>
-"Exercise 1:\n\tMean: 1/2\n\tCommon Comments: exercise not turned in, you win
 
-Exercise 2:\n\tMean: 1/3\n\tCommon Comments: exercise not turned in, you win again
+(format-course-stats) =>
 
-Exercise 3:\n\tMean: 1/6\n\tCommon Comments: exercise not turned in, you win
+"Perfect (with optional):\nMin: 105.26%\tMean: 105.26%\tMedian 105.26%\tMax: 105.26%\n\nPerfect:\nMin: 68.42%\tMean: 68.94%\tMedian 68.42%\tMax: 74.56%\n\nNone:\nMin: 0.00%\tMean: 0.83%\tMedian 0.00%\tMax: 11.40%\n"
 
-Exercise 4:\n\tMean: 1/6\n\tCommon Comments: exercise not turned in, you win
-
-Exercise 5:\n\tMean: 0\n\tCommon Comments: exercise not turned in
-
-Exercise 6:\n\tMean: 0\n\tCommon Comments: exercise not turned in"))
+))

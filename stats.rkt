@@ -12,10 +12,10 @@
          assignment-scores
          format-assignment-exercise-stats
          assignment-exercise-grades
-         (struct-out assignment))
+         (struct-out assignment)
+         format-course-stats)
 
 (struct assignment (dir num opt) #:transparent)
-
 
 
 (define (format-assignment-stats assignment)
@@ -52,11 +52,11 @@
  (num-graded assignment)
  (num-turned-in assignment)
  (num-exercises assignment)
- (mean scores)
- (median scores)
- (mode scores)
- (argmin values scores)
- (argmax values scores)
+ (real->decimal-string (mean scores))
+ (real->decimal-string (median scores))
+ (real->decimal-string (mode scores))
+ (real->decimal-string (argmin values scores))
+ (real->decimal-string (argmax values scores))
  (format-assignment-exercise-stats assignment)
  )))
 
@@ -139,10 +139,9 @@
 (define (format-exercise-stats num exercise-grades)
   (format "Exercise ~a:\n\tMean: ~a\n\tCommon Comments: ~a" 
           num 
-          (mean (map exercise-grade-score exercise-grades)) 
+          (real->decimal-string (mean (map exercise-grade-score exercise-grades)) 3) 
           (common-comments (map exercise-grade-comment exercise-grades))))
 
-; todo: ask Jay about filtering out the good comments
 (define (common-comments comments)
   (string-join (top-n (flatten (map (curry regexp-split #rx", *") comments)) 2) ", "))
 
@@ -151,6 +150,36 @@
   (if (> (length sorted) n)
       (take sorted n)
       sorted))
+
+(define (current-course-grades)
+  (define grades (map (λ (student) (get-current-grades (build-path (students-dir) student))) (students)))
+  (define ((course-grade score opt-score) assignment-grades)
+    (calculate-course-grade (fill-grades assignment-grades score opt-score)))
+  
+  (define perfect/opt-grades (map (course-grade 1 1) grades))
+  (define perfect-grades (map (course-grade 1 0) grades))
+  (define bad-grades (map (course-grade 0 0) grades))
+  (values perfect/opt-grades perfect-grades bad-grades))
+
+(define (percentage n)
+  (string-append (real->decimal-string (* 100 n)) "%"))
+
+(define (format-course-stats/grades label grades)
+  (format "~a:\n\tMin: ~a\tMean: ~a\tMedian ~a\tMax: ~a"
+          label
+          (percentage (argmin values grades))
+          (percentage (mean grades))
+          (percentage (median grades))
+          (percentage (argmax values grades))))
+
+(define (format-course-stats)
+  (define-values (perfect/opt-grades perfect-grades bad-grades) (current-course-grades))
+  (format "~a\n\n~a\n\n~a\n" 
+          (format-course-stats/grades "Perfect (with optional)" perfect/opt-grades)
+          (format-course-stats/grades "Perfect" perfect-grades)
+          (format-course-stats/grades "None" bad-grades)))
+          
+  
   
   
 
