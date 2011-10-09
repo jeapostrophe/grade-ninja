@@ -172,6 +172,6 @@
                #:extra-files-paths (list static)
                #:launch-browser? #f
                #:servlet-regexp #rx""
-               #:port 8080)
+               #:port 9000)
 
 (tcp-close l)
