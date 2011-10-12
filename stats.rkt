@@ -60,15 +60,6 @@
  (format-assignment-exercise-stats assignment)
  )))
 
-(define (mean lst)
-  (/ (foldl + 0 lst)
-     (length lst)))
-
-(define (median lst)
-  (list-ref (sort lst <) (quotient (length lst) 2)))
-
-(define (mode lst)
-  (car (argmax cdr (hash->list (foldl (λ (v h) (hash-update h v add1 0)) (hasheq) lst)))))
 
 (define (num-turned-in assignment)
   (count (λ (student) (directory-exists? (build-path (students-dir) student (assignment-dir assignment)))) (students)))
@@ -151,6 +142,8 @@
       (take sorted n)
       sorted))
 
+
+
 (define (current-course-grades)
   (define grades (map (λ (student) (get-current-grades (build-path (students-dir) student))) (students)))
   (define ((course-grade score opt-score) assignment-grades)
@@ -158,8 +151,10 @@
   
   (define perfect/opt-grades (map (course-grade 1 1) grades))
   (define perfect-grades (map (course-grade 1 0) grades))
+  (define expecteds (map expected-grade grades))
+  (define expected-grades (map (λ (student-grades expected) ((course-grade expected 0) student-grades)) grades expecteds))
   (define bad-grades (map (course-grade 0 0) grades))
-  (values perfect/opt-grades perfect-grades bad-grades))
+  (values perfect/opt-grades perfect-grades expected-grades bad-grades))
 
 (define (percentage n)
   (string-append (real->decimal-string (* 100 n)) "%"))
@@ -173,10 +168,11 @@
           (percentage (argmax values grades))))
 
 (define (format-course-stats)
-  (define-values (perfect/opt-grades perfect-grades bad-grades) (current-course-grades))
-  (format "~a\n\n~a\n\n~a\n" 
+  (define-values (perfect/opt-grades perfect-grades expected-grades bad-grades) (current-course-grades))
+  (format "~a\n\n~a\n\n~a\n\n~a\n" 
           (format-course-stats/grades "Perfect (with optional)" perfect/opt-grades)
           (format-course-stats/grades "Perfect" perfect-grades)
+          (format-course-stats/grades "Expected" expected-grades)
           (format-course-stats/grades "None" bad-grades)))
           
   

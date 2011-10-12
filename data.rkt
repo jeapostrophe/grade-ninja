@@ -12,6 +12,7 @@
                      "username.rkt"))
 
 (provide (struct-out assignment-info)
+         (struct-out assignment-grade)
          (struct-out exercise-grade)
          assignment-graded?
          format-assignment-grade
@@ -32,7 +33,11 @@
          toplevel-dir
          get-current-grades
          calculate-course-grade
-         fill-grades)
+         fill-grades
+         expected-grade
+         mean
+         median
+         mode)
 
 (struct assignment-info (num-exercises due-date num-opt-exercises opt-due-date) #:transparent)
 
@@ -51,6 +56,17 @@
 ;(define-runtime-path students-dir "../students")
 (define-runtime-path current-student-dir (format "../students/~a" (username)))
 (define-runtime-path email-file "../.email")
+
+
+(define (mean lst)
+  (/ (foldl + 0 lst)
+     (length lst)))
+
+(define (median lst)
+  (list-ref (sort lst <) (quotient (length lst) 2)))
+
+(define (mode lst)
+  (car (argmax cdr (hash->list (foldl (λ (v h) (hash-update h v add1 0)) (hasheq) lst)))))
 
 (define grade-regexp #rx"(?m:// Grade (0|1), (.*)$)")
 
@@ -126,6 +142,13 @@
            (format "\tAssignment ~a: ~a/~a" dir score total)])
         (sort (hash->list grades) string<? #:key car))
   "\n"))
+
+(define (expected-grade grades)
+  (mean 
+   (filter-map (match-lambda 
+                 [(cons #rx"[0-9]+" (assignment-grade score total)) (/ score total)]
+                 [else #f])
+               (hash->list grades))))
   
 (define/contract (format-course-grade student-dir) (path? . -> . string?)
   (define current-grades (get-current-grades student-dir))
@@ -133,6 +156,9 @@
   (define perfect/opt-course-grade (calculate-course-grade perfect/opt-grades))
   (define perfect-grades (fill-grades current-grades 1 0))
   (define perfect-course-grade (calculate-course-grade perfect-grades))
+  (define expected (expected-grade current-grades))
+  (define expected-grades (fill-grades current-grades expected 0))
+  (define expected-course-grade (calculate-course-grade expected-grades))
   (define bad-grades (fill-grades current-grades 0 0))
   (define bad-course-grade (calculate-course-grade bad-grades))
   (format "Current assignment grades:\n~a
@@ -141,12 +167,17 @@ Current grade if 100% on all future assignments (including optional assignments)
 
 Current grade if 100% on all future assignments (NOT including optional assignments):\n\n\t~a% (~a)
 
+Current grade if ~a% (your current average) on all future assignments:\n\n\t~a% (~a) 
+
 Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n" 
           (format-grades current-grades)
           (real->decimal-string (* 100 perfect/opt-course-grade) 2) 
           (grade->letter perfect/opt-course-grade) 
           (real->decimal-string (* 100 perfect-course-grade) 2) 
           (grade->letter perfect-course-grade) 
+          expected
+          (real->decimal-string (* 100 expected-course-grade) 2)
+          (grade->letter expected-course-grade)          
           (real->decimal-string (* 100 bad-course-grade) 2)
           (grade->letter bad-course-grade)))
 
