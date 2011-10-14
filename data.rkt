@@ -146,7 +146,7 @@
 (define (expected-grade grades)
   (mean 
    (filter-map (match-lambda 
-                 [(cons #rx"[0-9]+" (assignment-grade score total)) (/ score total)]
+                 [(cons (regexp #rx"[0-9]+") (assignment-grade score total)) (/ score total)]
                  [else #f])
                (hash->list grades))))
   
@@ -175,7 +175,7 @@ Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n"
           (grade->letter perfect/opt-course-grade) 
           (real->decimal-string (* 100 perfect-course-grade) 2) 
           (grade->letter perfect-course-grade) 
-          expected
+          (real->decimal-string (* 100 expected) 2)
           (real->decimal-string (* 100 expected-course-grade) 2)
           (grade->letter expected-course-grade)          
           (real->decimal-string (* 100 bad-course-grade) 2)

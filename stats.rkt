@@ -45,6 +45,10 @@
 \tMax:\t\t~a
 
 ~a
+
+Students who didn't turn in the assignment: 
+
+~a
 " 
  (assignment-dir assignment)
  (num-turned-in assignment)
@@ -58,8 +62,22 @@
  (real->decimal-string (argmin values scores))
  (real->decimal-string (argmax values scores))
  (format-assignment-exercise-stats assignment)
+ (format-not-turned-in assignment)
  )))
 
+(define (format-not-turned-in assignment)
+  (define not-turned-in (filter (λ (student) (not (directory-exists? (build-path (students-dir) student (assignment-dir assignment))))) (students)))
+  (string-join (map name/email not-turned-in) "\n"))
+
+(define (name/email student)
+  (format "\"~a\" <~a>" 
+          (file->string/unknown (build-path (students-dir) student ".name"))
+          (file->string/unknown (build-path (students-dir) student ".email"))))
+
+(define (file->string/unknown path)
+  (if (file-exists? path)
+      (file->string path)
+      "Unknown"))
 
 (define (num-turned-in assignment)
   (count (λ (student) (directory-exists? (build-path (students-dir) student (assignment-dir assignment)))) (students)))
