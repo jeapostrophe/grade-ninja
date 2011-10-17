@@ -59,8 +59,10 @@
 
 
 (define (mean lst)
-  (/ (foldl + 0 lst)
-     (length lst)))
+  (if (empty? lst)
+      0
+      (/ (foldl + 0 lst)
+         (length lst))))
 
 (define (median lst)
   (list-ref (sort lst <) (quotient (length lst) 2)))
@@ -146,7 +148,8 @@
 (define (expected-grade grades)
   (mean 
    (filter-map (match-lambda 
-                 [(cons (regexp #rx"[0-9]+") (assignment-grade score total)) (/ score total)]
+                 [(cons (regexp #rx"[0-9]+") (assignment-grade score total))
+                  (/ score total)]
                  [else #f])
                (hash->list grades))))
   
