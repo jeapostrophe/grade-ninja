@@ -89,7 +89,9 @@
                            "")
                      )
                (body ([onload "sh_highlightDocument();"])
-                (div ([style "width: 20%; position: fixed; top:30px; right: 5px;"] [valign "top"])
+                (div ([style "width: 20%; position: fixed; top:0px; right: 5px;"] [valign "top"])
+                     (img ([width "90%"] [align "center"]
+                           [src ,(format "/imgs/~a.jpg" netid)]) "") (br)
                      (span ,label)
                      (form ([action ,k-url])
                            ,@(formlet-display problem-form) (br)
