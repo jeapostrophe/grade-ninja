@@ -137,12 +137,19 @@
   (foldl (λ (grade total) (+ (exercise-grade-score grade) total)) 0 exercise-grades))
 
 
+(define (assignment<? a b)
+  (define-values (a-num a-opt) (parse-assignment-dir a))
+  (define-values (b-num b-opt) (parse-assignment-dir b))
+  (if (= a-num b-num)
+      (and (not a-opt) b-opt)
+      (< a-num b-num)))
+
 (define (format-grades grades)
   (string-join 
    (map (match-lambda
           [(cons dir (assignment-grade score total))
            (format "\tAssignment ~a: ~a/~a" dir score total)])
-        (sort (hash->list grades) string<? #:key car))
+        (sort (hash->list grades) assignment<? #:key car))
   "\n"))
 
 (define (expected-grade grades)
@@ -189,7 +196,7 @@ Current grade if 0% on all future assignments:\n\n\t~a% (~a)\n"
     (values (path->string assignment-dir) (get-assignment-grade (build-path student-dir assignment-dir)))))
 
 (define (parse-assignment-dir assignment-dir)
-  (match (path->string assignment-dir) 
+  (match (if (path? assignment-dir) (path->string assignment-dir) assignment-dir) 
     [(regexp #rx"([0-9]+)(opt)?/?$" (list _ num opt))
      (values (string->number num) (not (not opt)))]))
 
