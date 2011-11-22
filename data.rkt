@@ -70,7 +70,7 @@
 (define (mode lst)
   (car (argmax cdr (hash->list (foldl (λ (v h) (hash-update h v add1 0)) (hasheq) lst)))))
 
-(define grade-regexp #rx"(?m:// Grade (.*), (.*)$)")
+(define grade-regexp #rx"(?m:// Grade ([^,]*), (.*)$)")
 
 (define (current-student-name)
   (with-input-from-file (build-path current-student-dir ".name") read-line))
