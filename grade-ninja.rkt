@@ -16,6 +16,7 @@
 (define-runtime-path dry-turnin-rkt "dry-turnin.rkt")
 (define-runtime-path grade-rkt "grade.rkt")
 (define-runtime-path gradeof-rkt "gradeof.rkt")
+(define-runtime-path final-grades-rkt "final-grades.rkt")
 (define-runtime-path grade-stats-rkt "grade-stats.rkt")
 (define-runtime-path stats-rkt "stats.rkt")
 (define-runtime-path assignments-rkt "assignments.rkt")
@@ -39,6 +40,7 @@
 (replace-file "scripts/username.rkt" username-rkt #:permissions #o644)
 (replace-file "scripts/grade.rkt" grade-rkt #:permissions #o700)
 (replace-file "scripts/gradeof.rkt" gradeof-rkt #:permissions #o700)
+(replace-file "scripts/final-grades.rkt" final-grades-rkt #:permissions #o700)
 (replace-file "scripts/grade-stats.rkt" grade-stats-rkt #:permissions #o700)
 
 (define (compile-replace-script existing-file name)
